@@ -12,7 +12,6 @@ dap.adapters.codelldb = {
 }
 
 dap.configurations.c = {
-    {
         type = 'codelldb',
         request = 'launch',
         program = function()
@@ -21,13 +20,11 @@ dap.configurations.c = {
         --program = '${fileDirname}/${fileBasenameNoExtension}',
         cwd = '${workspaceFolder}',
         terminal = 'integrated'
-    }
 }
 
 dap.configurations.cpp = dap.configurations.c
 
 dap.configurations.rust = {
-    {
         type = 'codelldb',
         request = 'launch',
         program = function()
@@ -36,6 +33,5 @@ dap.configurations.rust = {
         cwd = '${workspaceFolder}',
         terminal = 'integrated',
         sourceLanguages = { 'rust' }
-    }
 }
 

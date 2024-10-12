@@ -6,8 +6,8 @@ local plugins = {
 		event = "VeryLazy",
 		dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" },
 		config = function()
-			local dap = require("dap")
-			local dapui = require("dapui")
+			local dap = require "dap"
+			local dapui = require "dapui"
 			dapui.setup()
 			dap.listeners.after.event_initialized["dapui_config"] = function()
 				dapui.open()
@@ -18,7 +18,7 @@ local plugins = {
 			dap.listeners.before.event_exited["dapui_config"] = function()
 				dapui.close()
 			end
-		end
+		end,
 	},
 	{
 		"jay-babu/mason-nvim-dap.nvim",
@@ -28,23 +28,40 @@ local plugins = {
 		},
 		opts = {
 			handlers = {},
-			ensure_installed = {
-				"codelldb",
-			},
 		},
 	},
 	{
 		"mfussenegger/nvim-dap",
 		config = function(_, _)
 			require "custom.configs.dap"
-			require("core.utils").load_mappings("dap")
-		end
+			require("core.utils").load_mappings "dap"
+		end,
+	},
+	{
+		"leoluz/nvim-dap-go",
+		ft = "go",
+		dependencies = "mfussenegger/nvim-dap",
+		config = function(_, opts)
+			require("dap-go").setup(opts)
+			require("core.utils").load_mappings "dap_go"
+		end,
+	},
+	{
+		"olexsmir/gopher.nvim",
+		ft = "go",
+		config = function(_, opts)
+			require("gopher").setup(opts)
+		end,
+		build = function()
+			vim.cmd [[silent! GoInstallDeps]]
+		end,
 	},
 	{
 		"nvimtools/none-ls.nvim",
 		dependencies = {
 			"nvimtools/none-ls-extras.nvim",
 		},
+		ft = { "go", "cpp", "c", "rs", "py", "lua", "ts", "js" },
 		config = function()
 			require "custom.configs.none-ls"
 		end,
@@ -61,8 +78,14 @@ local plugins = {
 				"black",
 				"eslint_d",
 				"pylint",
-			}
-		}
+				"gopls",
+				"gofumpt",
+				"goimports-reviser",
+				"golines",
+				"delve",
+				"codelldb",
+			},
+		},
 	},
 	{
 		"neovim/nvim-lspconfig",
@@ -70,9 +93,9 @@ local plugins = {
 			"hrsh7th/cmp-nvim-lsp",
 			{ "antosha417/nvim-lsp-file-operations", config = true },
 			{ "folke/neodev.nvim",                   opts = {} },
-			'williamboman/mason-lspconfig.nvim',
-			'WhoIsSethDaniel/mason-tool-installer.nvim',
-			{ 'j-hui/fidget.nvim', opts = {} },
+			-- 'williamboman/mason-lspconfig.nvim',
+			-- 'WhoIsSethDaniel/mason-tool-installer.nvim',
+			-- { 'j-hui/fidget.nvim', opts = {} },
 		},
 		config = function()
 			require "plugins.configs.lspconfig"
@@ -95,7 +118,7 @@ local plugins = {
 			{ "<c-l>",  "<cmd><C-U>TmuxNavigateRight<cr>" },
 			{ "<c-\\>", "<cmd><C-U>TmuxNavigatePrevious<cr>" },
 		},
-	}
+	},
 }
 
 return plugins
