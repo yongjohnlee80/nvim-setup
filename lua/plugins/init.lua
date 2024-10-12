@@ -202,6 +202,7 @@ local default_plugins = {
     end,
     config = function(_, opts)
       dofile(vim.g.base46_cache .. "nvimtree")
+      opts.view = { adaptive_size = true }
       require("nvim-tree").setup(opts)
     end,
   },
