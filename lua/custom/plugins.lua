@@ -12,10 +12,11 @@ local plugins = {
 			dap.listeners.after.event_initialized["dapui_config"] = function()
 				dapui.open()
 			end
-			dap.listeners.before.event_terminated["dapui_config"] = function()
+			dap.listeners.before.event_exited["dapui_config"] = function()
 				dapui.close()
 			end
-			dap.listeners.before.event_exited["dapui_config"] = function()
+			-- IMPORTANT: For working with Typescript and Javascript debugging comment the following event.
+			dap.listeners.before.event_terminated["dapui_config"] = function()
 				dapui.close()
 			end
 		end,
@@ -61,7 +62,7 @@ local plugins = {
 		dependencies = {
 			"nvimtools/none-ls-extras.nvim",
 		},
-		ft = { "go", "cpp", "c", "rs", "py", "lua", "ts", "js" },
+		ft = { "go", "cpp", "c", "rust", "python", "lua", "tsx", "javascript", "typescript" },
 		config = function()
 			require "custom.configs.none-ls"
 		end,
@@ -84,6 +85,8 @@ local plugins = {
 				"golines",
 				"delve",
 				"codelldb",
+				"typescript-language-server",
+				"js-debug-adapter",
 			},
 		},
 	},
@@ -118,6 +121,82 @@ local plugins = {
 			{ "<c-l>",  "<cmd><C-U>TmuxNavigateRight<cr>" },
 			{ "<c-\\>", "<cmd><C-U>TmuxNavigatePrevious<cr>" },
 		},
+	},
+	{
+		"rmagatti/auto-session",
+		lazy = false,
+
+		---enables autocomplete for opts
+		---@module "auto-session"
+		---@type AutoSession.Config
+		opts = {
+			suppressed_dirs = { "~/", "~/Projects", "~/Downloads", "/", "~/Documents/", "~/Desktop" },
+			-- log_level = 'debug',
+		},
+	},
+	{
+		"kdheepak/lazygit.nvim",
+		lazy = true,
+		cmd = {
+			"LazyGit",
+			"LazyGitConfig",
+			"LazyGitCurrentFile",
+			"LazyGitFilter",
+			"LazyGitFilterCurrentFile",
+		},
+		-- optional for floating window border decoration
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+		},
+		-- setting the keybinding for LazyGit with 'keys' is recommended in
+		-- order to load the plugin when the command is run for the first time
+		keys = {
+			{ "<leader>lg", "<cmd>LazyGit<cr>", desc = "LazyGit" },
+		},
+	},
+	{
+		"mrcjkb/rustaceanvim",
+		ft = "rust",
+		version = "^5", -- Recommended
+		lazy = false, -- This plugin is already lazy
+		config = function()
+			local mason_registry = require "mason-registry"
+			local codelldb = mason_registry.get_package "codelldb"
+			local extension_path = codelldb:get_install_path() .. "/extension/"
+			local codelldb_path = extension_path .. "adapter/codelldb"
+			local liblldb_path = extension_path .. "lldb/lib/liblldb.so"
+			local cfg = require "rustaceanvim.config"
+
+			vim.g.rustaceanvim = {
+				dap = {
+					adapter = cfg.get_codelldb_adapter(codelldb_path, liblldb_path),
+				},
+			}
+		end,
+	},
+	{
+		"rust-lang/rust.vim",
+		ft = "rust",
+		init = function()
+			vim.g.rustfmt_autosave = 1
+		end,
+	},
+	{
+		"kristijanhusak/vim-dadbod-ui",
+		dependencies = {
+			{ "tpope/vim-dadbod",                     lazy = true },
+			{ "kristijanhusak/vim-dadbod-completion", ft = { "sql", "mysql", "plsql", "psql" }, lazy = true }, -- Optional
+		},
+		cmd = {
+			"DBUI",
+			"DBUIToggle",
+			"DBUIAddConnection",
+			"DBUIFindBuffer",
+		},
+		init = function()
+			-- Your DBUI configuration
+			vim.g.db_ui_use_nerd_fonts = 1
+		end,
 	},
 }
 
