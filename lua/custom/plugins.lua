@@ -12,10 +12,11 @@ local plugins = {
 			dap.listeners.after.event_initialized["dapui_config"] = function()
 				dapui.open()
 			end
-			dap.listeners.before.event_terminated["dapui_config"] = function()
+			dap.listeners.before.event_exited["dapui_config"] = function()
 				dapui.close()
 			end
-			dap.listeners.before.event_exited["dapui_config"] = function()
+			-- IMPORTANT: For working with Typescript and Javascript debugging comment the following event.
+			dap.listeners.before.event_terminated["dapui_config"] = function()
 				dapui.close()
 			end
 		end,
@@ -61,7 +62,7 @@ local plugins = {
 		dependencies = {
 			"nvimtools/none-ls-extras.nvim",
 		},
-		ft = { "go", "cpp", "c", "rust", "py", "lua", "ts", "js" },
+		ft = { "go", "cpp", "c", "rust", "python", "lua", "tsx", "javascript", "typescript" },
 		config = function()
 			require "custom.configs.none-ls"
 		end,
@@ -84,6 +85,8 @@ local plugins = {
 				"golines",
 				"delve",
 				"codelldb",
+				"typescript-language-server",
+				"js-debug-adapter",
 			},
 		},
 	},
@@ -176,6 +179,23 @@ local plugins = {
 		ft = "rust",
 		init = function()
 			vim.g.rustfmt_autosave = 1
+		end,
+	},
+	{
+		"kristijanhusak/vim-dadbod-ui",
+		dependencies = {
+			{ "tpope/vim-dadbod",                     lazy = true },
+			{ "kristijanhusak/vim-dadbod-completion", ft = { "sql", "mysql", "plsql", "psql" }, lazy = true }, -- Optional
+		},
+		cmd = {
+			"DBUI",
+			"DBUIToggle",
+			"DBUIAddConnection",
+			"DBUIFindBuffer",
+		},
+		init = function()
+			-- Your DBUI configuration
+			vim.g.db_ui_use_nerd_fonts = 1
 		end,
 	},
 }
