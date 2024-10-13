@@ -61,7 +61,7 @@ local plugins = {
 		dependencies = {
 			"nvimtools/none-ls-extras.nvim",
 		},
-		ft = { "go", "cpp", "c", "rs", "py", "lua", "ts", "js" },
+		ft = { "go", "cpp", "c", "rust", "py", "lua", "ts", "js" },
 		config = function()
 			require "custom.configs.none-ls"
 		end,
@@ -150,6 +150,33 @@ local plugins = {
 		keys = {
 			{ "<leader>lg", "<cmd>LazyGit<cr>", desc = "LazyGit" },
 		},
+	},
+	{
+		"mrcjkb/rustaceanvim",
+		ft = "rust",
+		version = "^5", -- Recommended
+		lazy = false, -- This plugin is already lazy
+		config = function()
+			local mason_registry = require "mason-registry"
+			local codelldb = mason_registry.get_package "codelldb"
+			local extension_path = codelldb:get_install_path() .. "/extension/"
+			local codelldb_path = extension_path .. "adapter/codelldb"
+			local liblldb_path = extension_path .. "lldb/lib/liblldb.so"
+			local cfg = require "rustaceanvim.config"
+
+			vim.g.rustaceanvim = {
+				dap = {
+					adapter = cfg.get_codelldb_adapter(codelldb_path, liblldb_path),
+				},
+			}
+		end,
+	},
+	{
+		"rust-lang/rust.vim",
+		ft = "rust",
+		init = function()
+			vim.g.rustfmt_autosave = 1
+		end,
 	},
 }
 
